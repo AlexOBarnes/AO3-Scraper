@@ -91,6 +91,7 @@ CREATE TABLE fanfic_fandom(
     FOREIGN KEY (fanfic_id) REFERENCES fanfic(fanfic_id)
 );
 
+
 INSERT INTO category (category_name)
 VALUES 
 ('F/F'),
@@ -108,3 +109,12 @@ VALUES
 ('No Archive Warnings Apply'),
 ('Rape/Non-Con'),
 ('Underage Sex');
+
+INSERT INTO rating (rating_name)
+VALUES
+('Not Rated'),
+('General Audiences'),
+('Teen And Up Audiences'),
+('Mature'),
+('Explicit');
+
