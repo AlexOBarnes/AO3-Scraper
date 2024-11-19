@@ -90,3 +90,21 @@ CREATE TABLE fanfic_fandom(
     FOREIGN KEY (fandom_id) REFERENCES fandom(fandom_id),
     FOREIGN KEY (fanfic_id) REFERENCES fanfic(fanfic_id)
 );
+
+INSERT INTO category (category_name)
+VALUES 
+('F/F'),
+('F/M'),
+('Gen'),
+('M/M'),
+('Multi'),
+('Other');
+
+INSERT INTO warning (warning_name)
+VALUES 
+('Creator Chose Not To Use Archive Warnings'),
+('Graphic Depictions Of Violence'),
+('Major Character Death'),
+('No Archive Warnings Apply'),
+('Rape/Non-Con'),
+('Underage Sex');
