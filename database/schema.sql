@@ -54,8 +54,6 @@ CREATE TABLE fanfic_warning(
     FOREIGN KEY (fanfic_id) REFERENCES fanfic(fanfic_id)
 );
 
-
-
 CREATE TABLE fanfic_category(
     fanfic_id BIGINT NOT NULL,
     fanfic_category_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
