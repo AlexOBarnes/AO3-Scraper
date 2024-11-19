@@ -8,7 +8,7 @@ CREATE TABLE author(
 
 CREATE TABLE fanfic(
     date_posted TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL,
-    fanfic_id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    fanfic_id BIGINT PRIMARY KEY,
     fanfic_name TEXT NOT NULL,
     comments INTEGER NOT NULL,
     language VARCHAR(255) NOT NULL,
