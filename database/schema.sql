@@ -90,3 +90,11 @@ CREATE TABLE fanfic_fandom(
     FOREIGN KEY (fandom_id) REFERENCES fandom(fandom_id),
     FOREIGN KEY (fanfic_id) REFERENCES fanfic(fanfic_id)
 );
+
+INSERT INTO rating (rating_name)
+VALUES
+('Not Rated'),
+('General Audiences'),
+('Teen And Up Audiences'),
+('Mature'),
+('Explicit');
