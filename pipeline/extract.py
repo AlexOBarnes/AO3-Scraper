@@ -58,45 +58,66 @@ def extract_from_preface_div(preface_div: BeautifulSoup) -> dict:
     }
 
 
-def scrape_one_single_work(fanfic_id: str) -> dict:
+async def scrape_one_single_work(session, fanfic_id: str) -> dict:
     """Scrapes a single work."""
 
-    res = req.get(
-        f"https://archiveofourown.org/works/{fanfic_id}/")
-    html = res.text
+    url = f"https://archiveofourown.org/works/{fanfic_id}/"
 
-    soup = BeautifulSoup(html)
+    async with session.get(url) as res:
 
-    meta, preface = return_outer_divs(soup)
+        print("work", res.status)
 
-    data = extract_from_meta_div(meta)
-    preface_data = extract_from_preface_div(preface)
+        html = await res.text()
 
-    data.update(preface_data)
+        soup = BeautifulSoup(html, "html.parser")
 
-    return data
+        meta, preface = return_outer_divs(soup)
+
+        data = extract_from_meta_div(meta)
+        preface_data = extract_from_preface_div(preface)
+
+        data.update(preface_data)
+
+        return data
+
+
+async def scrape_works(work_ids: list) -> list:
+    """Asynchronously scrapes all the works on a page."""
+
+    async with aiohttp.ClientSession() as session:
+        tasks = [scrape_one_single_work(session, work_id)
+                 for work_id in work_ids]
+        results = await asyncio.gather(*tasks)
+        return results
 
 
 async def scrape_one_page(session, page_url: str) -> list:
     """Scrape an entire results page, return URLS of all results."""
     async with session.get(page_url) as res:
+        print("page", res.status)
         html = await res.text()
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, "html.parser")
 
         work_blocks = soup.find("ol").find_all("li", {"class": "work"})
 
-        return ["https://archiveofourown.org/works/"+block.attrs["id"][5:]
-            for block in work_blocks]
+        return [block.attrs["id"][5:]
+                for block in work_blocks]
 
 
 async def scrape_pages(num_pages: int = 1) -> list:
     """Scrapes a number of the most recent works on AO3."""
     async with aiohttp.ClientSession() as session:
-        tasks = [scrape_one_page(session,f"{BASE_URL}{str(i)}{QUERY_PARAMETERS}")
-                 for i in range(1,num_pages+1)]
+        tasks = [scrape_one_page(session, f"{BASE_URL}{str(i)}{QUERY_PARAMETERS}")
+                 for i in range(1, num_pages+1)]
         results = await asyncio.gather(*tasks)
         return [item for page_urls in results for item in page_urls]
 
 
+async def extract(num_pages: int = 1) -> list:
+    """The main function."""
+    work_ids = await scrape_pages(num_pages)
+    return await scrape_works(work_ids)
+
+
 if __name__ == "__main__":
-    print(asyncio.run(scrape_pages(5)))
+    print(asyncio.run(extract(2)))
