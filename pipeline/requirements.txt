@@ -3,3 +3,6 @@ pandas
 pytest
 pylint
 requests
+aiohttp
+asyncio
+bs4

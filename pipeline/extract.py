@@ -1,5 +1,7 @@
 """Scrapes AO3 for data."""
 
+import aiohttp
+import asyncio
 import requests as req
 from bs4 import BeautifulSoup
 
@@ -75,31 +77,26 @@ def scrape_one_single_work(fanfic_id: str) -> dict:
     return data
 
 
-def scrape_one_page(page_url: str) -> list:
+async def scrape_one_page(session, page_url: str) -> list:
     """Scrape an entire results page, return URLS of all results."""
+    async with session.get(page_url) as res:
+        html = await res.text()
+        soup = BeautifulSoup(html)
 
-    res = req.get(page_url)
-    html = res.text
+        work_blocks = soup.find("ol").find_all("li", {"class": "work"})
 
-    soup = BeautifulSoup(html)
-
-    work_blocks = soup.find("ol").find_all("li", {"class": "work"})
-
-    return ["https://archiveofourown.org/works/"+block.attrs["id"][5:]
+        return ["https://archiveofourown.org/works/"+block.attrs["id"][5:]
             for block in work_blocks]
 
 
-def scrape_pages(num_pages: int = 1) -> list:
+async def scrape_pages(num_pages: int = 1) -> list:
     """Scrapes a number of the most recent works on AO3."""
-
-    work_links = []
-
-    for i in range(1, num_pages+1):
-        work_links.extend(scrape_one_page(BASE_URL+str(i)+QUERY_PARAMETERS))
-
-    return work_links
+    async with aiohttp.ClientSession() as session:
+        tasks = [scrape_one_page(session,f"{BASE_URL}{str(i)}{QUERY_PARAMETERS}")
+                 for i in range(1,num_pages+1)]
+        results = await asyncio.gather(*tasks)
+        return [item for page_urls in results for item in page_urls]
 
 
 if __name__ == "__main__":
-
-    print(scrape_pages(10))
+    print(asyncio.run(scrape_pages(5)))
