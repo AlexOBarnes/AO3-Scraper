@@ -2,7 +2,6 @@
 
 import aiohttp
 import asyncio
-import requests as req
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://archiveofourown.org/works/search?commit=Search&page="
