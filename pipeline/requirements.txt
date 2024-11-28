@@ -6,3 +6,4 @@ requests
 aiohttp
 asyncio
 bs4
+polars

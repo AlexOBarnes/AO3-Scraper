@@ -120,4 +120,4 @@ async def extract(num_pages: int = 1) -> list:
 
 
 if __name__ == "__main__":
-    print(asyncio.run(extract(2)))
+    print(asyncio.run(extract(1)))
